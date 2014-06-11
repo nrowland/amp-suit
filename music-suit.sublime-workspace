@@ -1,0 +1,598 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"button",
+				"buttonState"
+			],
+			[
+				"RIght",
+				"RIGHT_MAX"
+			],
+			[
+				"Chest",
+				"CHEST_MAX"
+			],
+			[
+				"noi",
+				"NOISE"
+			],
+			[
+				"center",
+				"CENTER_MAX"
+			],
+			[
+				"RAIN",
+				"rainbow"
+			],
+			[
+				"ri",
+				"RIGHT_MAX"
+			],
+			[
+				"RAN",
+				"rainbow"
+			],
+			[
+				"che",
+				"CHEST_MAX"
+			],
+			[
+				"rainb",
+				"rainbow"
+			],
+			[
+				"CEnt",
+				"CENTER_MAX"
+			],
+			[
+				"end",
+				"end_point"
+			],
+			[
+				"star",
+				"start_point"
+			],
+			[
+				"rainbow",
+				"rainbowCycle"
+			],
+			[
+				"ran",
+				"rainbowCycle"
+			],
+			[
+				"left",
+				"LEFT_MAX"
+			],
+			[
+				"Cen",
+				"CENTER_MAX"
+			],
+			[
+				"Ch",
+				"CHEST_MAX"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "/*\nLED VU meter for Arduino and Adafruit NeoPixel LEDs.\n\nHardware requirements:\n - Most Arduino or Arduino-compatible boards (ATmega 328P or better).\n - Adafruit Electret Microphone Amplifier (ID: 1063)\n - Adafruit Flora RGB Smart Pixels (ID: 1260)\n   OR\n - Adafruit NeoPixel Digital LED strip (ID: 1138)\n - Optional: battery for portable use (else power through USB or adapter)\nSoftware requirements:\n - Adafruit NeoPixel library\n\nConnections:\n - 3.3V to mic amp +\n - GND to mic amp -\n - Analog pin to microphone output (configurable below)\n - Digital pin to LED data input (configurable below)\n See notes in setup() regarding 5V vs. 3.3V boards - there may be an\n extra connection to make and one line of code to enable or disable.\n\nWritten by Adafruit Industries.  Distributed under the BSD license.\nThis paragraph must be included in any redistribution.\n*/\n\n#include <Adafruit_NeoPixel.h>\n\n#define N_PIXELS  180  // Number of pixels in strand\n#define MIC_PIN   A3  // Microphone is attached to this analog pin\n#define LED_PIN    A9  // NeoPixel LED strand is connected to this pin\n#define DC_OFFSET  0  // DC offset in mic signal - if unusure, leave 0\n#define NOISE     30  // Noise/hum/interference in mic signal\n#define SAMPLES   60  // Length of buffer for dynamic level adjustment\n#define CHEST_MAX 40\n#define CENTER_MAX 60    //strip inside the hood\n#define RIGHT_MAX 80    //strip on the right\n#define LEFT_MAX 100 //strip on the left\n\nbyte\n  peak      = 0,      // Used for falling dot\n  dotCount  = 0,      // Frame counter for delaying dot-falling speed\n  volCount  = 0;      // Frame counter for storing past volume data\nint\n  vol[SAMPLES],       // Collection of prior volume samples\n  lvl       = 10,      // Current \"dampened\" audio level\n  minLvlAvg = 0,      // For dynamic adjustment of graph low & high\n  maxLvlAvg = 512;\nAdafruit_NeoPixel\n  strip = Adafruit_NeoPixel(N_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);\n\nvoid setup() {\n\n  // This is only needed on 5V Arduinos (Uno, Leonardo, etc.).\n  // Connect 3.3V to mic AND TO AREF ON ARDUINO and enable this\n  // line.  Audio samples are 'cleaner' at 3.3V.\n  // COMMENT OUT THIS LINE FOR 3.3V ARDUINOS (FLORA, ETC.):\n//  analogReference(EXTERNAL);\n\n  memset(vol, 0, sizeof(vol));\n  strip.begin();\n}\n\nvoid loop() {\n  uint8_t  i;\n  uint16_t minLvl, maxLvl;\n  int      n, chest_height, right_height, left_height ;\n  int CHEST_MAX = 40\n  int CENTER_MAX = 60;		//strip inside the hood\n  int RIGHT_MAX = 80 ;		//strip on the right\n  int LEFT_MAX = 100;	//strip on the left\n \n\n  n   = analogRead(MIC_PIN);                        // Raw reading from mic \n  n   = abs(n - 512 - DC_OFFSET); // Center on zero\n  n   = (n <= NOISE) ? 0 : (n - NOISE);             // Remove noise/hum\n  lvl = ((lvl * 7) + n) >> 3;    // \"Dampened\" reading (else looks twitchy)\n\n  // Calculate bar height based on dynamic min/max levels (fixed point):\n  chest_height = (CHEST_MAX+2) * (lvl - minLvlAvg) / (long)(maxLvlAvg - minLvlAvg);\n  right_height =  (RIGHT_MAX+2) * (lvl - minLvlAvg) / (long)(maxLvlAvg - minLvlAvg)\n  left_height =  (LEFT_MAX + 2) * (lvl - minLvlAvg) / (long)(maxLvlAvg - minLvlAvg)\n\n\n\n  if(height < 0L)       height = 0;      // Clip output\n  else if(height > TOP) height = TOP;\n  if(height > peak)     peak   = height; // Keep 'peak' dot at top\n\n\n  // Color pixels based on rainbow gradient\n  int j = 0;\n  int x = 0;					//counters the loop\n  int checkCounter = 0;				\n  int start_point = 0;      //start position for pixel update\n  int end_point = start_point + 2*j + 2;\n          int end_point = start_point + 2*j + 2;\n  if (checkCounter % 15 = 0) {\n      dither(strip.Color(0,127,127), 50);       // cyan, slow\n      dither(strip.Color(0,0,0), 15);           // black, fast\n      //dither(strip.Color(127,0,127), 50);       // magenta, slow\n      //dither(strip.Color(0,0,0), 15);           // black, fast\n      dither(strip.Color(127,127,0), 50);       // yellow, slow\n      dither(strip.Color(0,0,0), 15);\n  } else if (checkCounter % 10 = 0) {\n          rainbow(0, 0)\n          strip.show()\n  } else{\n      while(j<N_PIXELS) {          //BRING IF FUNCTIONS OUTSIDE OF THIS LOOP?\n        if(j >= height && j <= CHEST_MAX) {\n   		     strip.setPixelColor(j,   0,   0, 0); //blank out color if noise level is lower than i\n\n        } else if(j>CHEST_MAX && j <= RIGHT_MAX) {\n   		    //DO SOMETHING CRAZY\n            visualizer(end_point+1, RIGHT_MAX);\n        } else if(j>RIGHT_MAX && j<= CENTER_MAX) {\n            //do something less crazy\n            strip.setPixelColor(j,   0,   0, 127); \n        } else if(j>CENTER_MAX) {\n            //last strip to update\n            visualizer(N_PIXELS * -1, CENTER_MAX * -1)\n        } else {\n            visualizer(start_point, end_point);\n            start_point = end_point+1\n\n        }\n      }\n      j++;\n      strip.show(); // Update strip\n    }\n  	checkCounter++;\n    \n  \n  \n\n \n\n  /* Draw peak dot  \n  if(peak > 0 && peak <= N_PIXELS-1) strip.setPixelColor(peak,Wheel(map(peak,0,strip.numPixels()-1,30,150)));\n  \n   \n\n// Every few frames, make the peak pixel drop by 1:\n\n    if(++dotCount >= PEAK_FALL) { //fall rate \n      \n      if(peak > 0) peak--;\n      dotCount = 0;\n    }\n*/\n\n  vol[volCount] = n;                      // Save sample for dynamic leveling\n  if(++volCount >= SAMPLES) volCount = 0; // Advance/rollover sample counter\n\n  // Get volume range of prior frames\n  minLvl = maxLvl = vol[0];\n  for(i=1; i<SAMPLES; i++) {\n    if(vol[i] < minLvl)      minLvl = vol[i];\n    else if(vol[i] > maxLvl) maxLvl = vol[i];\n  }\n  // minLvl and maxLvl indicate the volume range over prior frames, used\n  // for vertically scaling the output graph (so it looks interesting\n  // regardless of volume level).  If they're too close together though\n  // (e.g. at very low volume levels) the graph becomes super coarse\n  // and 'jumpy'...so keep some minimum distance between them (this\n  // also lets the graph go to zero when no sound is playing):\n  if((maxLvl - minLvl) < TOP) maxLvl = minLvl + TOP;\n  minLvlAvg = (minLvlAvg * 63 + minLvl) >> 6; // Dampen min/max levels\n  maxLvlAvg = (maxLvlAvg * 63 + maxLvl) >> 6; // (fake rolling average)\n\n}\n\n/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Color Functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/\nvoid wave(uint32_t c, int cycles, uint8_t wait, int leftmax, int rightmax) {\n  float y;\n  byte  r, g, b, r2, g2, b2;\n\n  // Need to decompose color into its r, g, b elements\n  g = (c >> 16) & 0x7f;\n  r = (c >>  8) & 0x7f;\n  b =  c        & 0x7f; \n\n      for(int i=leftmax; i<rightmax; i++) {\n      y = sin(PI * (float)cycles * (float)(x + i) / (float)strip.numPixels());\n      if(y >= 0.0) {\n        // Peaks of sine wave are white\n        y  = 1.0 - y; // Translate Y to 0.0 (top) to 1.0 (center)\n        r2 = 127 - (byte)((float)(127 - r) * y);\n        g2 = 127 - (byte)((float)(127 - g) * y);\n        b2 = 127 - (byte)((float)(127 - b) * y);\n      } else {\n        // Troughs of sine wave are black\n        y += 1.0; // Translate Y to 0.0 (bottom) to 1.0 (center)\n        r2 = (byte)((float)r * y);\n        g2 = (byte)((float)g * y);\n        b2 = (byte)((float)b * y);\n      }\n      strip.setPixelColor(i, r2, g2, b2);\n    }\n    strip.show();\n    delay(wait);\n}\n\nvoid dither(uint32_t c, uint8_t wait) {\n\n  // Determine highest bit needed to represent pixel index\n  int hiBit = 0;\n  int n = strip.numPixels() - 1;\n  for(int bit=1; bit < 0x8000; bit <<= 1) {\n    if(n & bit) hiBit = bit;\n  }\n\n  int bit, reverse;\n  for(int i=0; i<(hiBit << 1); i++) {\n    // Reverse the bits in i to create ordered dither:\n    reverse = 0;\n    for(bit=1; bit <= hiBit; bit <<= 1) {\n      reverse <<= 1;\n      if(i & bit) reverse |= 1;\n    }\n    strip.setPixelColor(reverse, c);\n    strip.show();\n    delay(wait);\n  }\n  delay(250); // Hold image for 1/4 sec\n}\n\n/*void rainbowCycle(uint8_t wait, strip_section) {\n  uint16_t i, j, location;\n\n//  for (j=0; j < 384 * 5; j++) {     // 5 cycles of all 384 colors in the wheel\n    for (i=0; i < strip.numPixels(); i++) {\n      // tricky math! we use each pixel as a fraction of the full 384-color\n      // wheel (thats the i / strip.numPixels() part)\n      // Then add in j which makes the colors go around per pixel\n      // the % 384 is to make the wheel cycle around\n      location = i + strip_section\n      strip.setPixelColor(location, Wheel(((location * 384 / strip.numPixels()) + j) % 384));\n    }\n//    strip.show();   // write all the pixels out\n    delay(wait);\n  }\n*/\nvoid visualizer(first, last) {\n\n\n    for (int x = first; x<= last; x++) {     //loop through desired pixels\n          strip.setPixelColor(abs(x),Wheel(map(abs(x),0,strip.numPixels()-1,30,150)));\n\n    }\n} \nvoid rainbow(uint8_t wait) {\n  uint16_t i, j;\n\n  for(j=0; j<256; j++) {\n    for(i=section_start; i<section_end; i++) {\n      strip.setPixelColor(i, Wheel((i+j) & 255));\n    }\n    strip.show();\n    delay(wait);\n  }\n}\n/*void scanner(uint8_t r, uint8_t g, uint8_t b, uint8_t wait) {\n  int i, j, pos, dir;\n\n  pos = 0;\n  dir = 1;\n\n  for(i=0; i<((strip.numPixels()-1) * 8); i++) {\n    // Draw 5 pixels centered on pos.  setPixelColor() will clip\n    // any pixels off the ends of the strip, no worries there.\n    // we'll make the colors dimmer at the edges for a nice pulse\n    // look\n    strip.setPixelColor(pos - 2, strip.Color(r/4, g/4, b/4));\n    strip.setPixelColor(pos - 1, strip.Color(r/2, g/2, b/2));\n    strip.setPixelColor(pos, strip.Color(r, g, b));\n    strip.setPixelColor(pos + 1, strip.Color(r/2, g/2, b/2));\n    strip.setPixelColor(pos + 2, strip.Color(r/4, g/4, b/4));\n\n    strip.show();\n    delay(wait);\n    // If we wanted to be sneaky we could erase just the tail end\n    // pixel, but it's much easier just to erase the whole thing\n    // and draw a new one next time.\n    for(j=-2; j<= 2; j++) \n        strip.setPixelColor(pos+j, strip.Color(0,0,0));\n    // Bounce off ends of strip\n    pos += dir;\n    if(pos < 0) {\n      pos = 1;\n      dir = -dir;\n    } else if(pos >= strip.numPixels()) {\n      pos = strip.numPixels() - 2;\n      dir = -dir;\n    }\n  }\n}\n*/\n/*~~~~~~~~~~~~~~~Color Support~~~~~~~~~~*/\n// Input a value 0 to 255 to get a color value.\n// The colors are a transition r - g - b - back to r.\n/*uint32_t Wheel(byte WheelPos) {\n  if(WheelPos < 85) {\n   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);\n  } else if(WheelPos < 170) {\n   WheelPos -= 85;\n   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);\n  } else {\n   WheelPos -= 170;\n   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);\n  }\n}*/\nuint32_t Wheel(uint16_t WheelPos)\n{\n  byte r, g, b;\n  switch(WheelPos / 128)\n  {\n    case 0:\n      r = 127 - WheelPos % 128; // red down\n      g = WheelPos % 128;       // green up\n      b = 0;                    // blue off\n      break;\n    case 1:\n      g = 127 - WheelPos % 128; // green down\n      b = WheelPos % 128;       // blue up\n      r = 0;                    // red off\n      break;\n    case 2:\n      b = 127 - WheelPos % 128; // blue down\n      r = WheelPos % 128;       // red up\n      g = 0;                    // green off\n      break;\n  }\n  return(strip.Color(r,g,b));\n}",
+			"file": "amptie.ino",
+			"file_size": 10991,
+			"file_write_time": 130102607451577216,
+			"settings":
+			{
+				"buffer_size": 11078,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mark3/mark3.ino",
+			"settings":
+			{
+				"buffer_size": 6726,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "mark2/mark2.ino",
+			"settings":
+			{
+				"buffer_size": 8863,
+				"line_ending": "Windows",
+				"name": "#include <Adafruit_NeoPixel.h>"
+			}
+		},
+		{
+			"file": "sketch.c",
+			"settings":
+			{
+				"buffer_size": 2667,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "#include \"LPD8806.h\"\n#include \"SPI.h\"\n\n// Simple test for 160 (5 meters) of LPD8806-based RGB LED strip\n\n/*****************************************************************************/\n\n// Number of RGB LEDs in strand:\nint nLEDs = 160;\n\n// Chose 2 pins for output; can be any valid output pins:\nint dataPin  = 2;\nint clockPin = 3;\n\n// First parameter is the number of LEDs in the strand.  The LED strips\n// are 32 LEDs per meter but you can extend or cut the strip.  Next two\n// parameters are SPI data and clock pins:\nLPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);\n\n// You can optionally use hardware SPI for faster writes, just leave out\n// the data and clock pin parameters.  But this does limit use to very\n// specific pins on the Arduino.  For \"classic\" Arduinos (Uno, Duemilanove,\n// etc.), data = pin 11, clock = pin 13.  For Arduino Mega, data = pin 51,\n// clock = pin 52.  For 32u4 Breakout Board+ and Teensy, data = pin B2,\n// clock = pin B1.  For Leonardo, this can ONLY be done on the ICSP pins.\n//LPD8806 strip = LPD8806(nLEDs);\n\nvoid setup() {\n  // Start up the LED strip\n  strip.begin();\n\n  // Update the strip, to start they are all 'off'\n  strip.show();\n}\n\nvoid loop() {\n  colorChase(strip.Color(127,  0,  0), 100); // Red\n  colorChase(strip.Color(  0,127,  0), 100); // Green\n  colorChase(strip.Color(  0,  0,127), 100); // Blue\n  colorChase(strip.Color(127,127,127), 100); // White\n}\n\n// Chase one dot down the full strip.  Good for testing purposes.\nvoid colorChase(uint32_t c, uint8_t wait) {\n  int i;\n  \n  // Start by turning all pixels off:\n  for(i=0; i<strip.numPixels(); i++) strip.setPixelColor(i, 0);\n\n  // Then display one pixel at a time:\n  for(i=0; i<strip.numPixels(); i++) {\n    strip.setPixelColor(i, c); // Set new pixel 'on'\n    strip.show();              // Refresh LED states\n    strip.setPixelColor(i, 0); // Erase pixel, but don't refresh!\n    delay(wait);\n  }\n\n  strip.show(); // Refresh to turn off last pixel\n}\n\n\n\n\n\nvoid rainbow(uint8_t wait, sectionone) {\n  uint16_t i, j;\n\n  for(j=0; j<256; j++) {\n    for(i=section1_start; i<section1_end; i++) {\n      strip.setPixelColor(i, Wheel((i+j) & 255));\n      strip.setPixelColor(i+)\n    }\n\n    strip.show();\n    delay(wait);\n  }\n}",
+			"file": "/C/Users/rowlandn/Documents/GitHub/LPD8806/examples/longstrandtest/longstrandtest.pde",
+			"file_size": 2018,
+			"file_write_time": 130024119393938036,
+			"settings":
+			{
+				"buffer_size": 2222,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "#include <FastSPI_LED.h> //FastSPI library\n#include <FHT.h> // include the library\n\n#define LOG_OUT 1 // use the log output function\n#define FHT_N 256 // set to 256 point fht\n\n#define PixelCount 240\n#define MIC_PIN   A9  // Microphone is attached to this analog pin\n#define LED_PIN    6  // NeoPixel LED strand is connected to this pin\n#define DC_OFFSET  0  // DC offset in mic signal - if unusure, leave 0\n#define noiselvl     10  // Noise/hum/interference in mic signal\n#define SAMPLES   60  // Length of buffer for dynamic level adjustment\n#define TOP       (N_PIXELS + 2) // Allow dot to go slightly off scale\n#define PEAK_FALL 40  // Rate of peak falling dot\n\n\n\nstruct CRGB { unsigned char r; unsigned char g; unsigned char b; }; //sets the bit order of the LED values, so if strip is grb you just order these differently\nstruct CRGB *leds;  //defines pointer to CRGB as *leds\n\nvoid setup() {\n	memset(leds, 0, PixelCount * 3)\n	FastSPI_LED.setLeds(PixelCount); \n  FastSPI_LED.setChipset(CFastSPI_LED::SPI_WS2801);   //other drivers supported: TM1809, LPD6803, HL1606, 595, WS2801\n  //FastSPI_LED.setPin(fSPI_PIN); //pin only used for TM1809\n  FastSPI_LED.setDataRate(3); //if random flashing occurs (ws2801s i'm looking at you) set to 1-7 to slow data rate\n  FastSPI_LED.init();\n  FastSPI_LED.start();\n  \n  leds = (struct CRGB*)FastSPI_LED.getRGBData(); //magical array of LED, idk what this line does but it's required\n}\n\nvoid loop() {\n\n  int      n;\n  int	maximum;\n  int minimum;\n  int i\n  n   = analogRead(MIC_PIN);                        // Raw reading from mic \n  n   = abs(n - 512 - DC_OFFSET); // Center on zero\n  n   = (n <= NOISE) ? 0 : (n - NOISE);             // Remove noise/hum\n  //lvl = ((lvl * 7) + n) >> 3;    // \"Dampened\" reading (else looks twitchy)\n  fht_input[i] = n;\n  fht_window(); // window the data for better frequency response\n  fht_reorder(); // reorder the data before doing the fht\n  fht_run(); // process the data in the fht\n 	fht_mag_log(); // take the output of the fht\n	while (i < FHT_N/2)\n		if(maximum < fht_log_out[i])\n			maximum = fht_log_out[i]\n		if(minimum > fht_log_out[i])\n			minimum = fht_log_out[i]\n	maximum = max(fht_log_out)\n  	\n	switch (mode) {\n    case 0:\n        EQcolorOrgan();\n        delay(20);\n        break;\n\n    case 1:\n        EQcenterBar();\n        delay(15);\n        break;        \n        \n    case 2:\n        SlowWheel(100 + (irscale * 10)); //SLOW wheel						//have to change IR scale\n        break;\n\n    case 3: \n        FullFollow();\n        delay(5 + irscale);\n        break;        \n        \n    case 4:\n        EQsingleColorStep();\n        delay(5 + irscale);\n        break; \n\n    case 5:\n        EQvolbar();\n        delay(20);\n        break;   \n        \n    case 6:  \n       Strobe(30 + irscale); //30 is probably a functional minimum before it becomes just a dimmed light bulb, also I hate this mode\n       break;\n    \n    case 7:\n       rainbow(); \n       delay(25);\n       break;\n       \n    case 8:\n        rainbowCycle(2);\n        delay(5 + irscale);\n        break;\n        \n    case 9:\n        rainbowCycleEQ(6);\n        delay(5 + irscale);\n        break;\n        //more modes can go in here, but change power function and mode change function accordingly.\n        \n    default:\n      //\"off\".. more or less.\n      break;\n  }\n}\nvoid SlowWheel(int cchanged){ \n  //SlowWheel uses a timer instead of a delay, fades can be imperceptibly slow\n  //cchanged is a color fill delay int, should be a high number otherwise why not just use wheel function.\n  if(LoopStart + cchanged < millis()){        //Set the number of milliseconds to wait for a color change here\n    Wheel(LoopCnt);\n    colorFill(ledRed, ledGreen, ledBlue);  \n//          Serial.print(\"CNT: \"); // Debug -----------------------\n//          Serial.println(LoopCnt); // Debug -----------------------\n\n    LoopCnt++;                           // Increment the wheel counter\n    if (LoopCnt >= 768){LoopCnt=0;}       // Counter at the end of wheel, move it back to 0\n    LoopStart = millis();                // Rest the timestamp\n  }\n}\n\nvoid EQcolorOrgan(){ \n  //reads eq, punches value into the whole strip at once\n  readEQ();\n  colorFill(ledRed, ledGreen, ledBlue);\n}\n\nvoid FullFollow(){ \n //steps from one end of the array to the other updating EQ values pixel by pixel\n readEQ();\n \n if(LoopCnt <= PixelCountZB) { \n    //Add new color to array at pointer position\n    leds[PixelCountZB - LoopCnt].r = ledRed; //not really sure why it's from this side\n    leds[PixelCountZB - LoopCnt].g = ledGreen;\n    leds[PixelCountZB - LoopCnt].b = ledBlue;      \n    LoopCnt++;  // Increment the array position\n    FastSPI_LED.show();\n  }else{LoopCnt = 0;}\n}   \n\nvoid EQsingleColorStep(){//mod to include color RGB scales?\n // this takes the three eq values and just shoves them into a single color's values three at a time. \n // kinda lame, ill write it anyway. flag it for a remote control option to change colors or something. \n  readEQ();\n  \n  if (LoopCnt <= PixelCountZB ) {\n    \n    leds[LoopCnt].r = 0;\n    leds[LoopCnt].g = ledRed;\n    leds[LoopCnt].b = 0;\n    LoopCnt++;\n    \n    leds[LoopCnt].r = 0;\n    leds[LoopCnt].g = ledGreen;\n    leds[LoopCnt].b = 0;\n    LoopCnt++;\n    \n    leds[LoopCnt].r = 0;\n    leds[LoopCnt].g = ledBlue;\n    leds[LoopCnt].b = 0; \n    LoopCnt++;  \n    \n  } else {LoopCnt=0;}\n  \n  FastSPI_LED.show();\n}\n\nvoid EQvolbar() {\n//EQ volume bar, each color has its own bar from the strip's center\n//I want the color to fade out towards the end, to keep center from just being white\n//something to do later.\n\n  readEQ();\n  \n  memset(leds, 0, PixelCount * 3); //quickly wipe the array without touching variables\n    \n  int rngR = map(ledRed, 0, 256, 0, halfStripZB); //map the average to strip length, a bit sloppy, but i'm not smart enough to calculate once\n  int rngG = map(ledGreen, 0, 256, 0, halfStripZB);\n  int rngB = map(ledBlue, 0, 256, 0, halfStripZB);\n   \n  for(int i=0; i <= rngR; i++){\n      leds[halfStripZB-i].r = ledRed;\n      leds[halfStripZB+i].r = ledRed; \n  }\n  \n  for(int i=0; i <= rngG; i++){\n      leds[halfStripZB-i].g = ledGreen; \n      leds[halfStripZB+i].g = ledGreen;\n  }\n  \n  for(int i=0; i <= rngB; i++){     \n      leds[halfStripZB-i].b = ledBlue;\n      leds[halfStripZB+i].b = ledBlue;\n  \n  }\n  FastSPI_LED.show();\n}\n\n\nvoid rainbow() {\n  // rainbow accepts a color change delay value and fades the wheel color by color pixel by pixel\n  // I pulled out the loop so that the IR and button checks were performed every cycle\n  // also uses LoopCnt global variable. the wheel equation scales the entire strip to a 0-255 value based\n  // on the position of the pixel and the position of the loop count (which offsets the wheel's start position)\n     \n  if(LoopCnt <= 767) {\n    for (int i=0; i < PixelCountZB; i++) {\n      Wheel( (i + LoopCnt) % 767 );\n      leds[i].r = ledRed;\n      leds[i].g = ledGreen;\n      leds[i].b = ledBlue;\n    }  \n    LoopCnt++;\n    FastSPI_LED.show();\n  }else{LoopCnt=0;}\n}\n\n\nvoid rainbowCycle(long stripFades) { //stripfades should be an int, long keeps big number errors at bay\n//The confusingly named rainbowcycle attempts to evenly split the rainbow fade values along the LED strip\n//stripFades stripfades is the number of fades across the strip, I don't fully understand the equation here\n//and I had to make it used floating point calculation, so it runs slow. Adapted from adafruit's library.\n\n  if(LoopCnt <= 767) {\n    for (int i=0; i < PixelCountZB; i++) {\n      Wheel( ((i * (256 * stripFades) / PixelCount) + LoopCnt) % 767); //loopcnt handles the offset, while i splits 255 evenly among the pixel count\n      leds[i].r = ledRed;\n      leds[i].g = ledGreen;\n      leds[i].b = ledBlue;\n    }  \n    LoopCnt++; \n    FastSPI_LED.show();\n  }else{LoopCnt=0;}\n}\n\nvoid rainbowCycleEQ(long stripFades) {\n// Lowers the brightness values of rainbow cycle and uses the EQ color values to make up the difference.\n// short strips of colors travel down the pixels, and get larger as volume increases fading into \n// each other. it may look better if the effect is massively slowed or augmented in some way, color \n// interaction is hard to see. \n  int red, green, blue;\n  \n  if(LoopCnt <= 767) {\n    readEQ(); //one eq value per loop, keeps things from gettng wacky.\n    \n    red = ledRed - 200;  //instead of halving and then adding im taking these into the negatives.\n    green = ledGreen - 200;\n    blue = ledBlue - 200; \n    \n    for (int i=0; i < PixelCountZB; i++) {\n      Wheel( ((i * (256 * stripFades) / PixelCount) + LoopCnt) % 767 ); //the fade number is float otherwise int is overloaded... probably very slow\n      leds[i].r = constrain(ledRed + red, 0, 255); //this is a dumb way to boost bass, I just need a better input\n      leds[i].g = constrain(ledGreen + green, 0, 255);\n      leds[i].b = constrain(ledBlue + blue, 0, 255);\n    } \n\n    LoopCnt++; \n    FastSPI_LED.show();\n  }else{LoopCnt=0;} \n}\nvoid readEQ() {\n\n    spectrumValue[q] = (fht_log_out, FHT_N/2) //add FFT output read here? or remove spectrum value from the for loop and set it to FFT;\n//  Serial.print(q);\n//  Serial.print(\" \");\n//  Serial.println(spectrumValue[q]);\n	\n  }\n	\n  //Set the LED Colors\n  //this takes the analog frequency values and averages some bands\n  //the values are then set zero if not above a noise level, then mapped \n  //from their 0-1024 value to 1-255\n  \n  ledBlue = max(spectrumValue[6], spectrumValue[5]);\n  if (ledBlue <= noiseLvl){\n    ledBlue=0;\n  }else{\n    ledBlue = map(ledBlue, noiseLvl, 1024, 1, 255);\n  }\n\n  ledGreen = spectrumValue[4]; //4 is crazy, its like 3x higher than everything else... probably my mic. \n  if (ledGreen <= noiseLvl){\n    ledGreen=0;\n  }else{\n    ledGreen = map(ledGreen, noiseLvl, 1024, 1, 255);\n  }\n  ledRed = max(spectrumValue[3], max(spectrumValue[2], max(spectrumValue[1], spectrumValue[0]))); //kind of out of control with the max functions, but red isnt showing enough!\n  if (ledRed <= noiseLvl){\n    ledRed=0;\n  }else{\n    ledRed = map(ledRed, noiseLvl, 1024, 1, 255);\n  }\n}\n\n// ----------------------- Color Support Functions -----------------------\n\nvoid colorWipe(int red, int green, int blue) {\n// Used to open up loops, RGB values write to pixel set by loop count, strip is then displayed\n// Each call of the function advances pixel count.\n  if(LoopCnt <= PixelCountZB) {\n    leds[LoopCnt].r = red;\n    leds[LoopCnt].g = green;\n    leds[LoopCnt].b = blue;\n    LoopCnt++;                           // Increment the counter\n    FastSPI_LED.show();   // write all the pixels out\n  }else{LoopCnt=0;}\n}\n\nvoid colorWipeBack(int red, int green, int blue, uint8_t wait) {\n // Used to open up loops, RGB values write to pixel set by loop count, strip is then displayed\n // Each call of the function LOWERS pixel count.\n  if(LoopCnt <= PixelCountZB) {\n    leds[PixelCountZB - LoopCnt].r = red;\n    leds[PixelCountZB - LoopCnt].g = green;\n    leds[PixelCountZB - LoopCnt].b = blue;\n    LoopCnt++;                           // Increment the counter\n    FastSPI_LED.show();   // write all the pixels out\n  }else{LoopCnt=0;}\n}\n\n\nvoid colorFill(int red, int green, int blue) {\n //makes a filled array of the chosen color all at once (resets pixel count), then writes it. \n  for (int i=0; i < PixelCount; i++) { //is there a more direct way to pass these? this works.\n    leds[i].r = red;\n    leds[i].g = green;\n    leds[i].b = blue;\n  }\n  FastSPI_LED.show();\n}\n\nvoid Wheel(int WheelPos){\n//wheel accepts 0-767 (0 biased I guess) position int, it sets the global ledRed, ledGreen and ledBlue\n//values based on this position value. each color gets 256 positions. wheelpos binary number is\n//split to thirds by the bit shift.\n  switch(WheelPos >> 8) \n  {\n    case 0:\n      ledRed = 255 - WheelPos % 256;   //Red down\n      ledGreen = WheelPos % 256;      // Green up\n      ledBlue = 0;                  //blue off\n      break; \n    case 1:\n      ledGreen = 255 - WheelPos % 256;  //green down\n      ledBlue = WheelPos % 256;      //blue up\n      ledRed = 0;                  //red off\n      break; \n    case 2:\n      ledBlue = 255 - WheelPos % 256;  //blue down \n      ledRed = WheelPos % 256;      //red up\n      ledGreen = 0;                  //green off\n      break; \n  }\n}\nvoid ChangeMode(max, min) {\n//incrament the mode and recycle if at full\n//I can't wait to get the xbox remote running and delete this function\n  if (ModeUP){\n    digitalWrite(statusPin, LOW);\n    mode++;\n    if (mode > 9) {digitalWrite(statusPin, LOW); mode = 0;}\n  }else{\n    digitalWrite(statusPin, LOW);\n    mode--;\n    if (mode < 0) {digitalWrite(statusPin, LOW); mode = 9;} \n  }\n  \n  // Clear the strip\n  memset(leds, 0, PixelCount * 3);\n  FastSPI_LED.show();\n  \n  LoopStart = 0; //reset time\n  delay(20);   //dont like it, but otherwise the LED might not be visible, and modes already change too quickly\n  digitalWrite(statusPin, HIGH);\n}",
+			"file": "ampv.pde",
+			"file_size": 13236,
+			"file_write_time": 130084648511870659,
+			"settings":
+			{
+				"buffer_size": 12858,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/rowlandn/Documents/Arduino/libraries/FHT/examples/fht_adc/fht_adc.pde",
+			"settings":
+			{
+				"buffer_size": 1517,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "FFT test",
+			"settings":
+			{
+				"buffer_size": 1438,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/rowlandn/Documents/Arduino/libraries/FHT/examples/fht_codec/fht_codec.pde",
+			"settings":
+			{
+				"buffer_size": 1987,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/rowlandn/Documents/Arduino/libraries/ffft/ProcessingDemoApp/FFTvisualizer.pde",
+			"settings":
+			{
+				"buffer_size": 5224,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/C++/C++.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/rowlandn/Documents/Code/Arduino/amptie/amptie.ino",
+		"/L/Public/Share/Compass/Data/Noah/FABXMIOXX.ZB.ACCTS.LST5YR.TXT",
+		"/C/Users/rowlandn/Documents/Arduino/libraries/ffft/Examples/visualizer/visualizer.ino",
+		"/C/Users/rowlandn/Documents/Arduino/libraries/FastSPI_LED/examples/testleds/testleds.pde",
+		"/C/Users/rowlandn/Documents/GitHub/amp-suit/mark2.cpp",
+		"/C/Users/rowlandn/Documents/GitHub/amp-suit/FFT test",
+		"/C/Users/rowlandn/Documents/GitHub/LPD8806/examples/LEDbeltKit_alt/LEDbeltKit_alt.pde",
+		"/C/Users/rowlandn/Documents/GitHub/LPD8806/examples/LEDbeltKit/LEDbeltKit.pde",
+		"/C/Users/rowlandn/Documents/Code/Arduino/amptie/amptie.pde.bak",
+		"/C/Users/rowlandn/Documents/GitHub/amp-suit/amptie/amptie.ino",
+		"/C/Users/rowlandn/Documents/GitHub/Adafruit_NeoPixel/examples/strandtest/strandtest.pde",
+		"/C/Users/rowlandn/Documents/GitHub/amp-suit/mark1",
+		"/C/Users/rowlandn/Documents/Arduino/libraries/Adafruit_NeoPixel/examples/strandtest/strandtest.pde",
+		"/C/Users/rowlandn/Documents/Code/Arduino/Amp-V.prj"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"0066057480341",
+			"dither",
+			"wave",
+			"dither"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "amptie.ino",
+					"settings":
+					{
+						"buffer_size": 11078,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1444,
+								1085
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1710.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "mark3/mark3.ino",
+					"settings":
+					{
+						"buffer_size": 6726,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								529,
+								529
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 825.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "mark2/mark2.ino",
+					"settings":
+					{
+						"buffer_size": 8863,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								803,
+								803
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include <Adafruit_NeoPixel.h>",
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 150.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "sketch.c",
+					"settings":
+					{
+						"buffer_size": 2667,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1439,
+								1439
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 75.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/C/Users/rowlandn/Documents/GitHub/LPD8806/examples/longstrandtest/longstrandtest.pde",
+					"settings":
+					{
+						"buffer_size": 2222,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2220,
+								2220
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "ampv.pde",
+					"settings":
+					{
+						"buffer_size": 12858,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2173,
+								1442
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 450.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/C/Users/rowlandn/Documents/Arduino/libraries/FHT/examples/fht_adc/fht_adc.pde",
+					"settings":
+					{
+						"buffer_size": 1517,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								762,
+								762
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "FFT test",
+					"settings":
+					{
+						"buffer_size": 1438,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 150.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/C/Users/rowlandn/Documents/Arduino/libraries/FHT/examples/fht_codec/fht_codec.pde",
+					"settings":
+					{
+						"buffer_size": 1987,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 450.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/C/Users/rowlandn/Documents/Arduino/libraries/ffft/ProcessingDemoApp/FFTvisualizer.pde",
+					"settings":
+					{
+						"buffer_size": 5224,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2070.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 25.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

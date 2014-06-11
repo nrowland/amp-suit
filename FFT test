@@ -1,0 +1,49 @@
+/*
+fht_adc.pde
+guest openmusiclabs.com 9.5.12
+example sketch for testing the fht library.
+it takes in data on ADC0 (Analog0) and processes them
+with the fht. the data is sent out over the serial
+port at 115.2kb.  there is a pure data patch for
+visualizing the data.
+*/
+
+#define LOG_OUT 1 // use the log output function
+#define FHT_N 256 // set to 256 point fht
+
+#include <FHT.h> // include the library
+
+void setup() {
+  Serial.begin(115200); // use the serial port
+
+}
+
+void loop() {
+  int      n;
+  int maximum;
+  int minimum;
+  int i
+  for (i = 0; i < samples; i++) {
+    n   = analogRead(MIC_PIN);                        // Raw reading from mic 
+    n   = abs(n - 512 - DC_OFFSET); // Center on zero
+    n   = (n <= NOISE) ? 0 : (n - NOISE);             // Remove noise/hum
+    //lvl = ((lvl * 7) + n) >> 3;    // "Dampened" reading (else looks twitchy)
+    fht_input[i] = n;
+  }
+    fht_window(); // window the data for better frequency response
+    fht_reorder(); // reorder the data before doing the fht
+    fht_run(); // process the data in the fht
+    fht_mag_log(); // take the output of the fht
+  while (j < FHT_N/2) {
+    if(maximum < fht_log_out[j])
+      maximum = fht_log_out[j];
+    if(minimum > fht_log_out[j])
+      minimum = fht_log_out[j];
+    j++;
+  }
+  maximum = max(fht_log_out);
+  minimum = min(fht_log_out);
+  Serial.write(255); // send a start byte
+  Serial.write(fht_log_out, FHT_N/2); // send out the data
+  }
+}
